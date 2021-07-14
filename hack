@@ -12,20 +12,19 @@ fi
 hack_http(){
 	echo "hacking http"
 	whatweb --color=never $hostname >> whatweb.out
-	if cat whatweb.out | grep "RedirectLocation[https" ; then return; fi
-	echo $hostname | gau > gau.out
-	gospider -q -s "http://$hostname" > gospider.out
-#	dirb  "http://$hostname" -o dirb.out
-	gf urls | grep $hostname | sort -u >> urls.txt
-	cat urls.txt | sort -u | sponge urls.txt
-	rm dirb.out gau.out gospider.out ; wc -l urls.txt
-	cat urls.txt | unfurl format %s://%d%p |sort -u | shuf | head -n 100 | nuclei -l /dev/stdin -t /root/nuclei-templates/vulnerabilities/generic/ -o nuclei_vulns.txt
+	if cat whatweb.out | grep "RedirectLocation\[https" 
+	then 
+		return
+	else 
+		echo "HTTP not redirecting."
+	fi
 }
 
 hack_https(){
 	echo "hacking https"
 	whatweb --color=never "https://$hostname" >> whatweb.out
 
+	curl -sv "https://$hostname/" -o curl.out > /dev/null 2> curl_err.out
 	echo $hostname | gau > gau.out
 	gospider -q -s "https://$hostname" > gospider.out
 	cd /root/src/hackerone_reports; gf urls | grep -f $hostname >> h1reports.txt ; cd - > /dev/null
@@ -33,12 +32,13 @@ hack_https(){
 	gf urls | grep $hostname | sort -u >> urls.txt
 	cat urls.txt | sort -u | sponge urls.txt
 	rm dirbs.out gau.out gospider.out h1reports.txt ; wc -l urls.txt
-	cat urls.txt | unfurl format %s://%d%p |sort -u | shuf | head -n 100 | nuclei -l /dev/stdin -t /root/nuclei-templates/vulnerabilities/generic/ -o nuclei_vulns.txt
+	cat urls.txt | sort -u | shuf | head -n 100 | nuclei -l /dev/stdin -t /root/nuclei-templates/vulnerabilities/generic/ -o nuclei_vulns.txt
 	cat urls.txt | grep "\.js$" | wget --wait=1 --random-wait -i /dev/stdin -P js/
 }
 
 hack_rpcbind(){
 	rpcinfo -p $hostname
+	echo "look into nmap -Sv stuff to put here."
 }
 
 mkdir $hostname
