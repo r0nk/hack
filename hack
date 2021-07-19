@@ -34,6 +34,10 @@ hack_https(){
 	rm dirbs.out gau.out gospider.out h1reports.txt ; wc -l urls.txt
 	cat urls.txt | sort -u | shuf | head -n 100 | nuclei -l /dev/stdin -t /root/nuclei-templates/vulnerabilities/generic/ -o nuclei_vulns.txt
 	cat urls.txt | grep "\.js$" | wget --wait=1 --random-wait -i /dev/stdin -P js/
+	#@renniepak
+	cat js/* | grep -oh "\"\/[a-zA-Z0-9_/?=&]*\"" | sed -e 's/^"//' -e 's/"$//' | sort -u > js_endpoints.out
+	cat urls.txt | sort -u | shuf | head -n 100 | wget --wait=1 --random-wait -i /dev/stdin -P url_sample/
+	sha1sum url_sample/* | tee url_sample_hashes.txt | head -n 10
 }
 
 hack_rpcbind(){
@@ -41,10 +45,52 @@ hack_rpcbind(){
 	echo "look into nmap -Sv stuff to put here."
 }
 
+hack_api(){
+	echo "todo api stuff."
+#enumerate APIs
+#       spider & gau api endpoints
+#       if /users/1/edit exists, does /orders/1/edit exist?
+#rest api endpoint wordlists
+#ffuf -w common-methods.txt -u https://api.yoyogames.com/FUZZ
+
+#introspection for graphql, list all queries types
+#echo "{ __schema { types { name } } }" | graphql_url
+#for everything it returns, look for sensitive data
+
+#aquire api keys (can we grep the gau output for them?)
+#fuzz the endpoint a little, make sure the parser isn't borked.
+#while true; do curl endpoint_url -H $(echo $content | radamsa) | anew out ;done
+
+#api version checking
+#if echo url | grep -oP "v-?[0-9]+[^\/]*" ; then #test old domain# ;fi
+
+#IDORS
+#       for each endpoint
+#               remove cookies, does it still work
+#               lower permissions cookies, does it still work?
+#information disclosure
+#juicy
+
+#TODO LATER;
+#auth issues, web app requires auth but api doesnt
+#       token generation
+#buisness logic
+#       make numbers large and small, and negative, 0
+#       try to skip steps.
+#XSS
+#       check reflected inputs
+#CSRF
+#       look for csrf tokens
+#sql injections
+#race conditions
+#memory leaks
+
+}
+
 mkdir $hostname
 cd $hostname
 
-nmap $hostname | tee nmap.out
+nmap $hostname | tee nmap.out | anew /root/targets/tool_logs/nmap_portlist.out
 
 if cat nmap.out | grep "Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn" > /dev/null;
 then 
@@ -53,6 +99,11 @@ then
 	cd ..; 
 	rmdir $hostname
 fi
+
+whois $hostname > whois.out
+
+#certifications
+curl -s "https://crt.sh/?q=$hostname" | sed "s/<\/\?[^>]\+>//g" | grep $hostname > cert_sh.out
 
 if cat nmap.out | grep "80/tcp" | grep "open" > /dev/null; then hack_http ; fi
 if cat nmap.out | grep "443/tcp" | grep "open" > /dev/null; then hack_https ; fi
