@@ -2,8 +2,8 @@
 
 hostname="$1"
 
-if [ -z "$1" ] 
-then 
+if [ -z "$1" ]
+then
 	echo "No argument specified, exiting..."
 	exit
 #	cat /root/targets/tool_logs/wildcards.txt /root/targets/tool_logs/domains.txt | shuf | head -n 1
@@ -55,10 +55,10 @@ hack_api(){
 hack_http(){
 	echo "hacking http"
 	whatweb --color=never $hostname >> whatweb.out
-	if cat whatweb.out | grep "RedirectLocation\[https" 
-	then 
+	if cat whatweb.out | grep "RedirectLocation\[https"
+	then
 		return
-	else 
+	else
 		echo "HTTP not redirecting."
 	fi
 }
@@ -81,7 +81,7 @@ hack_https(){
 	cat js/* | grep -oh "\"\/[a-zA-Z0-9_/?=&]*\"" | sed -e 's/^"//' -e 's/"$//' | sort -u > js_endpoints.out
 	cat urls.txt | sort -u | shuf | head -n 100 | wget --wait=1 --random-wait -i /dev/stdin -P url_sample/
 	if cat curl.out| jq -e . >/dev/null 2>&1 ; then
-		hack_api 
+		hack_api
 	fi
 	sha1sum url_sample/* | tee url_sample_hashes.txt | head -n 10
 }
@@ -122,10 +122,10 @@ hack_domain(){
 	nmap $hostname | tee nmap.out | anew /root/targets/tool_logs/nmap_portlist.out
 
 	if cat nmap.out | grep "Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn" > /dev/null;
-	then 
+	then
 		echo "Host appears down, so we're just going to exit."
 		rm nmap.out
-		cd ..; 
+		cd ..;
 		rmdir $hostname
 	fi
 
@@ -148,7 +148,7 @@ hack_company(){
 	#check google dorks
 
 	whois $company_name > whois.out
-	#for each domain 
+	#for each domain
 		#hack_domain $domain
 
 	#for each executable
@@ -162,10 +162,10 @@ hack_company(){
 }
 
 while getopts "hc:" arg; do
-	case ${arg} in 
+	case ${arg} in
 		h)
 			echo "usage: hack <domain>"
-			exit 
+			exit
 			;;
 		c)
 			echo "hacking company $OPTARG"
@@ -186,4 +186,4 @@ done
 
 shift $(($OPTIND-1))
 hostname="$1"
-echo hostname $hostname 
+echo hostname $hostname
