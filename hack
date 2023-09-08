@@ -69,14 +69,18 @@ revs(){
 	rlwrap ncat -lvp $port
 }
 
+
+#TODO fork this out to a golang program
+demon() {
+
+	echo "Summoning demon..."
+	inotifywait -s -e close_write -m . --format %f | while read line;  do
+		$line &
+	done
+}
+
 echo "Running $@"
 $@
 
 #TODO fuff setup
 #cat ffuf.json  | jq -r ".results[].url" | anew urls.txt
-
-#TODO
-#inotify daemon that can automatically feed recon pipeline
-
-#TODO
-#todo.txt intergration
