@@ -19,7 +19,7 @@ title_card(){
 title_card
 
 usage() {
-	echo "USAGE (really just all the functions in the file:"
+	echo "USAGE (really just all the functions in the file):"
 	echo ""
 	whereis $0 | awk '{print $2}' | xargs cat | grep "()" | grep "{" | sed "s/()//g" | tr -d '{'
 	exit 1;
@@ -69,15 +69,41 @@ revs(){
 	rlwrap ncat -lvp $port
 }
 
+nmap.txt(){
+	if cat nmap.txt | grep "Microsoft Windows RPC"; then
+		rpcdump.py $(cat ip.txt) > rpcdump.txt
+	fi
+}
+
+ip.txt(){
+	recon
+}
+
+#useful for checking if directories exist when you have a LFI
+# /etc/thing/ -> /etc/thing/../../
+dircheck(){
+	path=$1
+
+	printf "%s" $path ; echo $1 | sed "s/\// /g" | for i in $(cat /dev/stdin) ; do
+		echo "../"
+	done | tr -d '\n'
+	echo
+}
+
 
 #TODO fork this out to a golang program
+#TODO actually this would be better as a make program
 demon() {
 
 	echo "Summoning demon..."
 	inotifywait -s -e close_write -m . --format %f | while read line;  do
+		spd-say $line
 		$line &
 	done
 }
+
+#git the last changes to a file since last commit
+#git diff test.txt | grep '^[+][^+-]' | sed "s/^+//g"
 
 echo "Running $@"
 $@

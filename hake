@@ -1,0 +1,18 @@
+#!/bin/make -sf
+splash:
+	echo "hack + make = HAKE"
+
+naabu.txt: ip.txt
+	cat ip.txt | naabu | anew naabu.txt
+
+httpx.txt: naabu.txt
+	cat naabu.txt | httpx | anew httpx.txt
+
+urls.txt: httpx.txt
+	cat httpx.txt | katana | anew urls.txt
+
+nmap.txt: ip.txt
+	nmap ip.txt -o nmap.txt
+
+#git the last changes to a file since last commit
+#git diff test.txt | grep '^[+][^+-]' | sed "s/^+//g

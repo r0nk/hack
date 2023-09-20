@@ -1,0 +1,37 @@
+IMPROV
+
+Inevitably, there's going to be a point where you don't know what you're doing.
+Panic not, this is where the real hacking starts.
+
+First, make sure you know what the program is supposed to do. Enumerate _everything_ it is supposed to do before you start looking for things it shouldn't do. Google random strings the box gives you to see if you can find version numbers or past exploits.
+
+When you get stuck, start fuzzing _something_. It doesn't matter what, but make your computer guess you sit back and think. Radamsa, ffuf, and fuzzdb are great for this.
+
+Usually, when you get stuck it's one of two things,
+	* Something needs to be fuzzed.
+	* Something needs more recon.
+
+We're doing CTFs, usually these are
+	* sql injections, so where could a database be?
+	* command injections, so where could it be calling an external program? Where is the most complicated functionality on the server?
+
+When all else fails, take a break, get up and walk around, motion creates emotion. Always be ~closing~ fuzzing. Try harder. Think Weirder. If this shit was easy we'd be out of a job.
+
+
+These are a lot of helpful links to help you.
+
+https://book.hacktricks.xyz/
+https://github.com/swisskyrepo/PayloadsAllTheThings
+https://chat.openai.com/
+https://github.com/
+https://cve.mitre.org/cve/
+https://www.exploit-db.com/
+https://www.rapid7.com/db/
+https://www.exploit-db.com/
+https://0x1.gitlab.io/code/CyberChef/
+https://www.revshells.com/
+
+priv esc:
+https://gtfobins.github.io/
+https://github.com/carlospolop/PEASS-ng
+https://crackstation.net/
