@@ -1,0 +1,19 @@
+#!/usr/bin/shake
+
+all: naabu.txt httpx.txt urls.txt nmap.txt nmap_all_ports.txt
+
+naabu.txt:	ips.txt
+	cat ips.txt | naabu | anew ips.txt
+
+httpx.txt:	naabu.txt
+	cat naabu.txt | httpx | anew httpx.txt
+
+urls.txt:	katana.txt
+	cat httpx.txt | katana | anew urls.txt
+
+nmap.txt: ips.txt
+	nmap -iL ips.txt -o nmap.txt
+
+nmap_all_ports.txt: ips.txt
+	nmap -p- -iL ips.txt -o nmap_all_ports.txt
+

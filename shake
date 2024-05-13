@@ -1,0 +1,10 @@
+#!/bin/bash
+
+f="$1"
+
+echo "watching $f"
+inotifywait -r -s -e close_write -m . --format %f | while read line;  do
+	echo "$f: $line updated at $(date -Im)"
+	make -f $f &
+done
+
