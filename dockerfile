@@ -28,7 +28,7 @@ RUN go install -v github.com/projectdiscovery/pdtm/cmd/pdtm@latest
 RUN apt install -y libpcap-dev # For naabu
 RUN /root/go/bin/pdtm -install-all
 
-RUN apt install -y inetutils-ping enum4linux nbtscan exploitdb python2 rlwrap php seclists ffuf telnet
+RUN apt install -y inetutils-ping enum4linux nbtscan exploitdb python2 rlwrap php seclists ffuf telnet exiftool
 
 #TMUX
 RUN apt install -y tmuxinator
