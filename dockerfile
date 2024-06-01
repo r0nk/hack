@@ -28,17 +28,31 @@ RUN go install -v github.com/projectdiscovery/pdtm/cmd/pdtm@latest
 RUN apt install -y libpcap-dev # For naabu
 RUN /root/go/bin/pdtm -install-all
 
-RUN apt install -y inetutils-ping enum4linux nbtscan exploitdb python2 rlwrap php seclists ffuf telnet exiftool
+RUN apt install -y inetutils-ping enum4linux nbtscan exploitdb python2 rlwrap php seclists ffuf telnet exiftool moreutils
 
 #TMUX
 RUN apt install -y tmuxinator
 COPY .tmuxinator.yml .tmuxinator.yml
 
 COPY bashrc .bashrc
+COPY .inputrc .inputrc
 
 COPY shake /usr/bin/shake
-COPY demon demon
 
 COPY timer.sh /usr/bin/timer.sh
+
+RUN apt install -y pandoc
+COPY report.sh /usr/bin/report.sh
+
+RUN apt install -y cargo
+RUN apt install -y dnsutils
+RUN apt install -y impacket_scripts
+
+#I'm completely at a loss as to why this works.
+RUN chown root /usr/bin/nmap
+
+COPY demon demon
+
+RUN date -Im > build_date.txt
 
 ENTRYPOINT ["tmuxinator"]

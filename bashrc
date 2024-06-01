@@ -83,6 +83,9 @@ extr(){
 }
 
 export HISTIGNORE='history:clear:ls*'
+export HISTFILE='/root/local/history'
+PROMP_COMMAND="history -a; $PROMPT_COMMAND"
+
 alias sus="sort | uniq -c | sort -n"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash

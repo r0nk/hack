@@ -52,7 +52,7 @@ windows:
       # synchronize: after
       panes:
         - mitmproxy
-        - demon
+        - cd local && ../demon
         - timer.sh
   - bash:
       panes:

@@ -1,12 +1,13 @@
+demon_fixes	30	0001-01-01T00:00+00:00	2024-05-26T14:24-05:00
+chown_nmap	30	0001-01-01T00:00+00:00	2024-05-26T13:28-05:00
+report/part_files	30	0001-01-01T00:00+00:00	2024-05-20T18:21-05:00
+ffuf_to_urls	30	0001-01-01T00:00+00:00	2024-05-20T17:40-05:00
+exported_history	30	0001-01-01T00:00+00:00	2024-05-20T14:52-05:00
+report_generation_support	60	0001-01-01T00:00+00:00	2024-05-18T21:14-05:00
+ignore_case_tab_complete	15	0001-01-01T00:00+00:00	2024-05-18T20:52-05:00
+report_standard	30	0001-01-01T00:00+00:00	2024-05-18T20:48-05:00
 faster_nmap_pass	30	0001-01-01T00:00+00:00	2024-05-13T16:32-05:00
 demon_update	30	0001-01-01T00:00+00:00	2024-05-13T16:32-05:00
 timer	15	0001-01-01T00:00+00:00	2024-05-13T15:05-05:00
 anew_install	30	0001-01-01T00:00+00:00	2024-05-07T13:54-05:00
-report_standard	30
-report_generation_support	60
-copy_paste_between_tabs	30
-improve_cookie_handling	60
-shared_history_handling	30
-record_history_to_review	30
-ignore_case_tab_complete	15
-ffuf_to_urls	30
+smb/research	60

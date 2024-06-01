@@ -1,0 +1,36 @@
+Each stream is basically its own program
+
+we want to have a clean, systematic, fast way of creating these programs.
+
+These streams can repeat at different parts of the tree.
+
+These are different from raw binary checks, because often times we gain information from these.
+
+trigger management for different streams.
+
+use the filesystem to represent the stream tree
+
+detect things like novelty/reflections
+
+With any stream, there's:
+	input
+	output
+	input space
+	output space
+	information
+	handler
+
+	output space > output > information
+	input space > handler > input
+
+we need a handler that selects other handlers
+
+single universal handler per stream
+
+hack will fork itself for every directory, recursively
+
+a sort of hacking lambda calculus, that maximizes information while minimizing queries
+
+It really comes down to query selection
+
+human queries can also work

@@ -1,0 +1,6 @@
+systeminfo
+
+netstat -ano #Opened ports?
+
+C:\Program Files (x86)
+

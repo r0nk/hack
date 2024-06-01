@@ -1,5 +1,19 @@
 #!/bin/bash
 
+exploit_steps(){
+	echo "TODO: Screenshot for each terminal step"
+	echo "TODO: Final screenshot with flag and ifconfig"
+}
+
+methodologies_report(){
+	printf '\n## methodologies\n\n'
+	echo
+	echo scope:
+	cat ip.txt
+	echo
+	echo TODO
+}
+
 generate_report(){
 	printf "
 ---
@@ -23,6 +37,18 @@ code-block-font-size: \scriptsize
 	printf "# "
 	pwd | tr '/' '\n' | tail -n 1
 
+	printf '\n## high level overview\n\n'
+	echo "###overall summary "
+	echo
+	echo TODO
+	echo
+	echo "###recommendations (non-technical)*"
+	echo
+	echo TODO
+	echo
+
+	methodologies_report
+
 	printf "## "
 	cat ip.txt
 
@@ -30,9 +56,10 @@ code-block-font-size: \scriptsize
 	cat nmap.txt | grep -E "[0-9].*"
 	printf "\`\`\`\n\n"
 
-	echo "### User"
-
+	echo "### User flag"
+	exploit_steps
 	echo "### Priviledge escalation"
+	exploit_steps
 }
 
 if [ ! -f report.md ]; then

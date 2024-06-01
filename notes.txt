@@ -1,6 +1,2 @@
 reverse shell should always be running
 mitmproxy should always be running
-
-docker instance from kali image with tmux
-
-handle todo
