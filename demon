@@ -8,21 +8,11 @@ report.pdf: report.md
 report.md: screenshots/user.png screenshots/root.png
 	report.sh
 
-naabu.txt:	ip.txt
-	cat ip.txt | naabu | anew naabu.txt
-	cat naabu.txt | tr ':' ' ' | awk '{print $2}' | xargs mkdir
-
 httpx.txt:	naabu.txt
 	cat naabu.txt | httpx | anew httpx.txt
 
 urls.txt:	httpx.txt
 	cat httpx.txt | katana | anew urls.txt
-
-nmap.txt: ip.txt
-	nmap -iL ip.txt -o nmap.txt
-
-nmap_all_ports.txt: ip.txt
-	nmap -sC -sV -p- -iL ip.txt -o nmap_all_ports.txt
 
 fuzz_urls.txt: ip.txt
 	ffuf -v -w /usr/share/seclists/Discovery/Web-Content/big.txt -u "http://$(cat ip.txt)/FUZZ" -ac | grep URL | awk '{print $4}' | anew fuzz_urls.txt
