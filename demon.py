@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/bin/env python3
 import pathlib
 from os import listdir
 import os
@@ -129,6 +129,7 @@ def unidentified_port_handler():
     #check that the parents are something like /tcp/1234/
     subprocess.run(f"nmap -p {port} -sC -sV -oX nmap.xml {ip_address}",shell=True)
     parse_nmap_xml_single("nmap.xml")
+handlers.append(unidentified_port_handler())
 
 def handle():
     for h in handlers:

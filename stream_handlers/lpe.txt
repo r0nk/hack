@@ -12,3 +12,12 @@ for i in $(seq 1 610); do ps -e --format cmd >> /tmp/monprocs.tmp; sleep 0.1; do
 env
 
 crontab -l
+
+#if its writable we can add our own password to it
+ls -al /etc/passwd
+
+#see what capabilites certain executables have
+/usr/sbin/getcap -r / 2>/dev/null
+find / -perm /u=s,g=s -type f 2>/dev/null
+#https://gtfobins.github.io/gtfobins/
+

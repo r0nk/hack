@@ -47,11 +47,13 @@ COPY report.sh /usr/bin/report.sh
 RUN apt install -y cargo
 RUN apt install -y dnsutils
 RUN apt install -y impacket_scripts
+RUN apt install -y mysql-defaults
+RUN apt install -y impacket-scripts
 
 #I'm completely at a loss as to why this works.
 RUN chown root /usr/bin/nmap
 
-COPY demon demon
+COPY demon.py demon.py
 
 RUN date -Im > build_date.txt
 
