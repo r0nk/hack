@@ -8,6 +8,7 @@ while true; do
 	for directory in  $(find $recon_folder -type d -not -path '*/.*') ; do
 		cd $directory
 		for handler in $(ls $handlers_path); do
+			echo $(date -Im) $handler | tee /root/demon.log.txt
 			./$handler &
 		done
 		cd -
