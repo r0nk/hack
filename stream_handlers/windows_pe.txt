@@ -1,6 +1,46 @@
+
+# Several key pieces of information we should always obtain
+# Username 
+# Hostname
+# Group memberships of the current user
+# Existing users and groups
+# Operating system, version and architecture
+# Network information
+# Installed applications
+# Running processes
+
+#User information
+whoami
+whoami /groups
+whoami /priv #if this one has SeImpersonatePrivilege, then we can use godpotato for pe
+get-localuser
+get-localgroup
+
 systeminfo
 
+# Network information
+ipconfig /all
 netstat -ano #Opened ports?
+route print
 
+
+# Installed applications
 C:\Program Files (x86)
+
+Get-ItemProperty "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*" | select displayname
+Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" | select displayname
+ps
+
+ foreach ($port in 1..1024) {If (($a=Test-NetConnection 172.16.231.10 -Port $port -WarningAction SilentlyContinue).tcpTestSucceeded -eq $true){ "TCP port $port is open!"}}
+
+
+#do we have ssh? makes it easier to transfer files/remote port forward
+ssh
+
+
+#Be sure to check for databases/hashes
+
+#filesystem searches
+Get-ChildItem -Path C:\xampp -Include *.txt,*.ini -File -Recurse -ErrorAction SilentlyContinue
+ls -r c:\users
 

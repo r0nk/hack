@@ -82,9 +82,9 @@ extr(){
         return $retval
 }
 
-export HISTIGNORE='history:clear:ls*'
+export HISTIGNORE='history:clear*'
 export HISTFILE='/root/local/history'
-PROMP_COMMAND="history -a; $PROMPT_COMMAND"
+PROMP_COMMAND="$PROMPT_COMMAND; history -a; history -n"
 
 alias sus="sort | uniq -c | sort -n"
 
