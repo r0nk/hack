@@ -1,6 +1,6 @@
 
 # Several key pieces of information we should always obtain
-# Username 
+# Username
 # Hostname
 # Group memberships of the current user
 # Existing users and groups
@@ -11,7 +11,7 @@
 
 #User information
 whoami
-whoami /groups
+whoami /groups # am I already an administrator?
 whoami /priv #if this one has SeImpersonatePrivilege, then we can use godpotato for pe
 get-localuser
 get-localgroup

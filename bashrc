@@ -87,6 +87,8 @@ export HISTFILE='/root/local/history'
 PROMP_COMMAND="$PROMPT_COMMAND; history -a; history -n"
 
 alias sus="sort | uniq -c | sort -n"
+alias p="proxychains"
+alias gip="grep -Eo \"([0-9]{1,3}[\.]){3}[0-9]{1,3}\""
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 PATH=$PATH:/root/.pdtm/go/bin:/root/go/bin

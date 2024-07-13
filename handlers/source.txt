@@ -1,0 +1,16 @@
+git clone repo
+cd repo
+cloc . --out=cloc.txt
+semgrep scan > semgrep.txt
+
+#IF docker image NOT provided
+#	IF gh search repos "$PROJECT docker"
+#		Clone dockerfile
+#	else
+#		Create dockerfile
+#run docker image
+
+#TODO enumerate_inputs
+#TODO develop_fuzz_harness
+#TODO fuzz
+#TODO manual trace of inputs

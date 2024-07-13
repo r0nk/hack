@@ -1,2 +1,0 @@
-get-ciminstance win32_service # list windows services
-Get-CimInstance -ClassName win32_service | Select Name, StartMode | Where-Object {$_.Name -like 'mysql'} #check if the mysql service is restarted  on restart.

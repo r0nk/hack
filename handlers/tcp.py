@@ -1,6 +1,7 @@
 #!/bin/env python3
 
 import xml.etree.ElementTree as ET
+import os.path
 
 def split(path):
     try:
@@ -59,13 +60,16 @@ def parse_nmap_xml(file_path):
 
                 print(f"  Port: {port_id}/{protocol}, State: {state}, Service: {service}")
 
+def conditions():
+    return ((cwd.name == 'tcp') and not os.path.isfile("nmap.xml") and not os.path.isfile("nmap_full.xml"))
+
 def tcp_handler():
-    if(cwd.name == 'tcp'):
-        subprocess.run(f"nmap -oX nmap.xml {ip_address}",shell=True)
-        parse_nmap_xml_split("nmap.xml")
-        subprocess.run(f"nmap -p- -oX nmap_full.xml {ip_address}",shell=True)
-        parse_nmap_xml_split("nmap_full.xml")
-        return True
-    return False
+    if( not conditions()):
+        return False
+    subprocess.run(f"nmap -oX nmap.xml {ip_address}",shell=True)
+    parse_nmap_xml_split("nmap.xml")
+    subprocess.run(f"nmap -sV -sC -p- -oX nmap_full.xml {ip_address}",shell=True)
+    parse_nmap_xml_split("nmap_full.xml")
+    return True
 
 tcp_handler()

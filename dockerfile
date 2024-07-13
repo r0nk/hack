@@ -17,7 +17,7 @@ RUN apt -y install python3-pip golang
 # Install Kali Linux "Top 10" metapackage and a few cybersecurity useful tools
 RUN DEBIAN_FRONTEND=noninteractive apt -y install kali-tools-top10 exploitdb man-db dirb nikto wpscan uniscan lsof apktool dex2jar ltrace strace binwalk
 
-RUN apt install -y libpcap-dev  inetutils-ping enum4linux nbtscan exploitdb python2 rlwrap php seclists ffuf telnet exiftool moreutils  tmuxinator  pandoc  cargo  dnsutils impacket-scripts proxychains tcpdump mimikatz hashcat windows-binaries
+RUN apt install -y libpcap-dev  inetutils-ping enum4linux nbtscan exploitdb python2 rlwrap php seclists ffuf telnet exiftool moreutils  tmuxinator  pandoc  cargo  dnsutils impacket-scripts proxychains proxychains4 tcpdump mimikatz hashcat windows-binaries jq
 
 #unzip rockyou
 WORKDIR /usr/share/seclists/Passwords/Leaked-Databases/
@@ -50,7 +50,7 @@ COPY timer.sh /usr/bin/timer.sh
 #I'm completely at a loss as to why this works.
 RUN chown root /usr/bin/nmap
 
-COPY demon.py demon.py
+COPY demon demon
 
 RUN date -Im > build_date.txt
 

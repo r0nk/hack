@@ -52,7 +52,7 @@ windows:
       # synchronize: after
       panes:
         - mitmproxy
-        - cd local && ../demon.py
+        - cd local && ../demon
         - tcpdump
   - bash:
       panes:

