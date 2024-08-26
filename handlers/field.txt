@@ -8,7 +8,8 @@ If we can generate errors:
 		eg ''
 	else:
 		try to execute code regardless, curling back home, etc
+format strings
+template injection
 can you make it sleep? time based blind
 platform specifc payloads
 sqli check
-

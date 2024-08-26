@@ -1,5 +1,4 @@
 #hosts fix 
-curl -v $(pwd | gip) 2>&1 | grep Location: | choose 2 | unfurl domains | anew domains.txt
 katana
 ffuf big, directory, raft
 vhosts
