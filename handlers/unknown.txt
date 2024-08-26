@@ -1,0 +1,10 @@
+if its a port
+	nmap -sV -p 1337
+hacktricks
+grab banners
+google any unique seeming strings on github
+grab version numbers
+recursively google any relevant information
+light fuzzing
+look for related platform vulnerabilites (java, sql, etc)
+heavy fuzzing

@@ -1,0 +1,4 @@
+psexec
+wmiexec
+evil-winrm
+

@@ -1,0 +1,5 @@
+nmap -sV --script "ldap* and not brute" -p 389 $(pwd | gip)
+ldapsearch -H ldap://$(pwd | gip)
+
+#with auth
+ldapsearch

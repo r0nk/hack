@@ -2,6 +2,9 @@
 
 #upgrade our shell
 python3 -c 'import pty; pty.spawn("/bin/bash")'
+export TERM=xterm  #This will give you commands as clear
+#ctrl + z
+stty raw -echo; fg
 
 id
 env
@@ -14,24 +17,34 @@ ls -lah /etc/cron*
 
 cat /etc/passwd | grep sh
 find /home
+find /opt
+find /tmp
+#see what capabilites certain executables have
+/usr/sbin/getcap -r / 2>/dev/null
+find / -perm /u=s,g=s -type f 2>/dev/null
+#https://gtfobins.github.io/gtfobins/
+find / -writable -type d 2>/dev/nul
+#find and sort by date modified
+find . -printf "%T@ %Tc %p\n" | sort -n
+
+#if you have permissions on the _directory_, you can delete
+#files you don't have write permissions on.
 
 ip a
 (netstat -punta || ss --ntpu)
 
 ps aux
 #poor mans pspy
-for i in $(seq 1 610); do ps -e --format cmd >> /tmp/monprocs.tmp; sleep 0.1; done; sort /tmp/monprocs.tmp | uniq -c | grep -v "\[" | sed '/^.\{200\}./d' | sort | grep -E -v "\s*[6-9][0-9][0-9]|\s*[0-9][0-9][0-9][0-9]"; rm /tmp/monprocs.tmp;
+#for i in $(seq 1 610); do ps -e --format cmd >> /tmp/monprocs.tmp; sleep 0.1; done; sort /tmp/monprocs.tmp | uniq -c | grep -v "\[" | sed '/^.\{200\}./d' | sort | grep -E -v "\s*[6-9][0-9][0-9]|\s*[0-9][0-9][0-9][0-9]"; rm /tmp/monprocs.tmp;
 
+
+#check databases for other credentials
 
 #if its writable we can add our own password to it
 ls -al /etc/passwd
 
-#see what capabilites certain executables have
-/usr/sbin/getcap -r / 2>/dev/null
-find / -perm /u=s,g=s -type f 2>/dev/null
-#https://gtfobins.github.io/gtfobins/
 
-find / -writable -type -d 2>/dev/nul
+#also run linpeas
 
 cat /etc/fstab
 

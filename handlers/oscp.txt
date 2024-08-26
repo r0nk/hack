@@ -1,0 +1,5 @@
+#try to get a screenshot of every step
+ip addr && cat /root/proof.txt /home/*/local.txt
+scrot -s
+tmux capture-pane -t 0:5 -p -S- > tmux_history.txt
+

