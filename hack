@@ -1,7 +1,12 @@
 #!/usr/bin/env -S just --working-directory . --justfile
 
+
 default:
 	@just --list --list-heading '' --list-prefix ''
+
+#update this script
+update:
+	curl -s https://raw.githubusercontent.com/r0nk/hack/master/hack | sudo tee /usr/bin/hack | wc -l
 
 #TODO make this also create directories for each port found
 nmap:
