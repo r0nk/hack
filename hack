@@ -57,3 +57,14 @@ hashes:
 shadowcrack:
 	cat shadow | tr ':' ' ' | awk '{print $2}' | grep "\\$" | anew hashes.txt
 	hashcat hashes.txt
+
+[no-cd]
+dns_scope:
+        cat domains.txt | dnsx -a -resp > dnsx.txt
+        cat dnsx.txt | awk '{print $2}' | tr -d '[' | tr -d ']' | sort | uniq -c | sort -n  > ip_sus.txt
+        cat ip_sus.txt | awk '{print $2}' | anew ips.txt | xargs mkdir
+
+[no-cd]
+naabu:
+        cat ips.txt | naabu | anew naabu.txt
+        cat naabu.txt  | tr ':' ' ' | awk '{print $2}' | sort | uniq -c | sort -rn > naabu_sus.txt
