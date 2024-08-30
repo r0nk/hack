@@ -7,6 +7,13 @@ default:
 update:
 	curl -s https://raw.githubusercontent.com/r0nk/hack/master/hack | sudo tee /usr/bin/hack | wc -l
 
+methodology:
+	echo "domain_names	60" | anew todo.txt
+	echo "ip_ranges_asn_etc	60" | anew todo.txt
+	echo "strange_ports	60" | anew todo.txt
+	echo "http_ports_unusual	60" | anew todo.txt
+	echo "http_main	60" | anew todo.txt
+
 nmap:
 	nmap -v -sV -sC -p- $(pwd | grep -Eo "([0-9]{1,3}[\.]){3}[0-9]{1,3}") -oA nmap_full
 #	nmap -v -sU -p- $(pwd | grep -Eo "([0-9]{1,3}[\.]){3}[0-9]{1,3}") -oA nmap_udp
@@ -18,6 +25,10 @@ ip:
 #Get the domain from the current directory
 domain:
 	@pwd | tr '/' '\n' | grep "\." | head -n 1
+
+#Get the port from the current directory
+port:
+	@pwd | tr '/' '\n' | grep -A 1 "\." | tail -n 1
 
 robots:
 	curl -L -v $(hack domain)/robots.txt -o robots.txt
@@ -36,13 +47,13 @@ wl:
 	@find /usr/share/seclists/ -type f | fzf
 
 path_fuzz:
-	ffuf -u http://$(hack ip)/FUZZ -w /usr/share/seclists/Discovery/Web-Content/big.txt -recursion -od ffufo -ac
+	ffuf -u http://$(hack ip)/FUZZ -w $(hack wl) -recursion -od ffufo -ac
 
 path_fuzz_slow:
-	ffuf -u http://$(hack domain)/FUZZ -w /usr/share/seclists/Discovery/Web-Content/big.txt -recursion -od ffufo -ac -t 1 -p 0.1-0.3
+	ffuf -u http://$(hack domain)/FUZZ -w $(hack wl) -recursion -od ffufo -ac -t 1 -p 0.1-0.3
 
 subdomain_fuzz:
-	ffuf -u http://$(hack ip) -h "Host: FUZZ.$(head -n 1 domains.txt)" -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -od ffufo -ac
+	ffuf -u http://$(hack ip) -h "Host: FUZZ.$(head -n 1 domains.txt)" -w $(hack wl) -od ffufo -ac
 
 rev port:
 	ip addr | grep inet | sort
