@@ -116,3 +116,9 @@ dns:
 	dig any $(head -n 1 domain.txt) @$(pwd | gip)
 	dig afxr @$(pwd | gip)
 	dig afxr @$(pwd | gip) $(head -n 1 domain.txt)
+
+wordpress:
+	wpscan --url http://$(hack ip):$(hack port)
+	# try to brute force the login with hydra
+	# hydra -L lists/usrname.txt -P lists/pass.txt localhost -V http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:S=Location'
+	echo "wordpress/brute_force_login 60" | anew todo.txt
