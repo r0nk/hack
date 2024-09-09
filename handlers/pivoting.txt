@@ -1,2 +1,6 @@
 #try ssh if its possible
+#plink automates it on windows
+
+#nmap possible hosts /24
+
 

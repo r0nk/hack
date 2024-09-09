@@ -11,10 +11,6 @@ With any stream, there's:
 	output space > output > information
 	input space > handler > input
 
-we need a handler that selects other handlers
-
-single universal handler per stream
-
 a sort of hacking lambda calculus, that maximizes information while minimizing queries
 
 It really comes down to query selection

@@ -1,6 +1,0 @@
-#hosts fix 
-katana
-ffuf big, directory, raft
-vhosts
-enumerate every possible field
-enumerate url params

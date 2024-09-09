@@ -7,7 +7,17 @@ default:
 update:
 	curl -s https://raw.githubusercontent.com/r0nk/hack/master/hack | sudo tee /usr/bin/hack | wc -l
 
-methodology:
+ftp:
+	ftp ftp@$(hack ip)
+	nmap --script ftp-* -p 21 $(hack ip) -o nmap-ftp.txt
+	openssl s_client -connect $(hack ip):$(hack port) -starttls ftp # Get certificate
+#if 'passive', just type passive on the client to disable
+
+msf:
+	msfconsole -x "set RHOSTS $(hack ip); set RPORT $(hack port);"
+
+
+scope_level:
 	echo "domain_names	60" | anew todo.txt
 	echo "ip_ranges_asn_etc	60" | anew todo.txt
 	echo "strange_ports	60" | anew todo.txt
@@ -30,6 +40,25 @@ domain:
 port:
 	@pwd | tr '/' '\n' | grep -A 1 "\." | tail -n 1
 
+
+default_device := "tun0"
+#Get our ip, for reverse shells and the like
+lip dev=default_device:
+	ip -4 addr {{dev}} | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+
+
+#udp/5355, Non-dns hostname to ip
+LLMNR:
+	echo "responder" | anew todo.txt
+
+#udp/137, NetBIOS names to ip addresses on a local network. Predecessor of LLMNR
+NBT-NS:
+	echo "responder" | anew todo.txt
+
+#requires LLMNR
+responder dev=default_device:
+r	responder -I {{dev}}
+
 unknown_port:
 	firefox "https://book.hacktricks.xyz/?q=$(hack port)" "https://duckduckgo.com/?t=ftsa&q=port+$(hack port)&ia=web" "https://www.speedguide.net/port.php?port=$(hack port)"
 	echo "search_version_cve 10" | anew todo.txt
@@ -47,11 +76,20 @@ hostsfix:
 	curl -v $(hack ip) 2>&1 | grep Location: | choose 2 | unfurl domains | anew domains.txt
 	echo $(hack ip) $(head -n 1 domains.txt) | sudo tee -a /etc/hosts
 
+final:
+	echo "ip addr && cat /root/proof.txt /home/*/local.txt"
+
+log-capture pane:
+	tmux capture-pane -t 0:{{pane}} -p -S-
+
 http:
 	echo $(hack domain) | katana | anew spider_urls | anew urls.txt
 	curl -L -s $(hack domain)/robots.txt -o robots.txt
 	echo $(hack domain) | dnsx -asn  -a -recon -resp > dnsx.txt
-	echo "fuzz 5" | anew todo.txt
+	echo "vhosts 60" | anew todo.txt
+	echo "fields	60" | anew todo.txt
+	echo "param 60" | anew todo.txt
+	echo "paths 60" | anew todo.txt
 
 wl:
 	@find /usr/share/seclists/ -type f | fzf
@@ -79,6 +117,28 @@ sqliraw:
 ldap:
 	nmap -sV --script "ldap* and not brute" -p 389 $(pwd | gip) -o nmap.ldap.txt
 	ldapsearch -H ldap://$(pwd | gip)
+
+field:
+	echo "reflection/xss	30" | anew todo.txt
+	echo "reflection/php	30" | anew todo.txt
+	echo "reflection/sqli	30" | anew todo.txt
+	echo "reflection/ssti	30" | anew todo.txt
+	echo "errors		30" | anew todo.txt
+	echo "format_strings	30" | anew todo.txt
+	echo "sleep		30" | anew todo.txt
+	echo "platform_specific	30" | anew todo.txt
+	echo "sqli	30" | anew todo.txt
+
+#simple network management protocol check
+snmp-check:
+	sudo nmap -sU -sV -sC --open -p 161 $(hack ip)
+
+#simple network management protocol testing
+snmp:
+	echo "find_community_string	60" | anew todot.txt
+	nmap --script "snmp* and not snmp-brute" $(hack ip)
+	snmp-check $(hack ip)
+	snmpbulkwalk -c public -v2c $(hack ip) .
 
 smb:
 	enum4linux -a $(pwd | gip) | tee enum4linux.txt
@@ -117,8 +177,18 @@ dns:
 	dig afxr @$(pwd | gip)
 	dig afxr @$(pwd | gip) $(head -n 1 domain.txt)
 
+#port 88 methodology
+kerberos:
+	echo "kerbrute	30" | anew todo.txt
+	echo "getuserspns	30" | anew todo.txt
+	nmap -sV -p $(hack port) --script="banner,krb5-enum-user" $(hack ip)
+
+sip:
+	nmap -sV -p $(hack port) --script="sip-enum-users,sip-methods"
+
 wordpress:
 	wpscan --url http://$(hack ip):$(hack port)
 	# try to brute force the login with hydra
 	# hydra -L lists/usrname.txt -P lists/pass.txt localhost -V http-form-post '/wp-login.php:log=^USER^&pwd=^PASS^&wp-submit=Log In&testcookie=1:S=Location'
 	echo "wordpress/brute_force_login 60" | anew todo.txt
+

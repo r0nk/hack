@@ -6,19 +6,15 @@ export TERM=xterm  #This will give you commands as clear
 #ctrl + z
 stty raw -echo; fg
 
-id
+id; uname -a
 env
-uname -a
 sudo -V #below 1.8?
 sudo -l
 
-crontab -l
-ls -lah /etc/cron*
+crontab -l ; ls -lah /etc/cron*
 
 cat /etc/passwd | grep sh
-find /home
-find /opt
-find /tmp
+find /home /opt /tmp
 #see what capabilites certain executables have
 /usr/sbin/getcap -r / 2>/dev/null
 find / -perm /u=s,g=s -type f 2>/dev/null
@@ -26,6 +22,9 @@ find / -perm /u=s,g=s -type f 2>/dev/null
 find / -writable -type d 2>/dev/nul
 #find and sort by date modified
 find . -printf "%T@ %Tc %p\n" | sort -n
+
+#find by user
+find / -type f -user root 2>/dev/null
 
 #if you have permissions on the _directory_, you can delete
 #files you don't have write permissions on.
@@ -42,7 +41,6 @@ ps aux
 
 #if its writable we can add our own password to it
 ls -al /etc/passwd
-
 
 #also run linpeas
 
