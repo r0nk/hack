@@ -156,9 +156,9 @@ shadowcrack:
 	hashcat hashes.txt
 
 dns_scope:
-        cat domains.txt | dnsx -a -resp > dnsx.txt
-        cat dnsx.txt | awk '{print $2}' | tr -d '[' | tr -d ']' | sort | uniq -c | sort -n  > ip_sus.txt
-        cat ip_sus.txt | awk '{print $2}' | anew ips.txt
+        cat domains.txt | dnsx -nc -a -resp > dnsx.txt
+        cat dnsx.txt | choose 2 | tr -d '[' | tr -d ']' | sort | uniq -c | sort -n  > ip_sus.txt
+        cat ip_sus.txt | choose 1 | anew ips.txt
 
 naabu:
         cat ips.txt | naabu | anew naabu.txt
