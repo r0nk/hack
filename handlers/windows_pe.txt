@@ -44,3 +44,4 @@ ssh
 Get-ChildItem -Path C:\xampp -Include *.txt,*.ini -File -Recurse -ErrorAction SilentlyContinue
 ls -r c:\users
 
+#If we're on a domain controller, look for Vulnerable Certificate Authority Access Control - ESC7
