@@ -11,6 +11,10 @@ ftp:
 	ftp ftp@$(hack ip)
 	nmap --script ftp-* -p 21 $(hack ip) -o nmap-ftp.txt
 	openssl s_client -connect $(hack ip):$(hack port) -starttls ftp # Get certificate
+#	hydra -s 21 -C /usr/share/sparta/wordlists/ftp-default-userpass.txt -u -f > $ip
+	echo "Check_upload_potential	15" | anew todo.txt
+	echo "common_creds_check	15" | anew todo.txt
+
 #if 'passive', just type passive on the client to disable
 
 msf:
@@ -26,6 +30,8 @@ scope_level:
 
 nmap:
 	nmap -v -sV -sC -p- $(hack ip) -oA nmap_full
+	echo "nmap_udp 60" | anew todo.txt
+	echo "version_checks 60" | anew todo.txt
 
 nmap_udp:
 	nmap -v -sU -p- $(hack ip) -oA nmap_udp
@@ -69,6 +75,7 @@ unknown_port:
 rpc:
 	impacket-rpcdump $(hack ip) > rpcdump.txt
 	cat rpcdump.txt  | grep -i "pipe"  | sort | uniq > pipes.txt
+#rpcclient -U "" target-ip
 
 robots:
 	curl -L -v $(hack domain)/robots.txt -o robots.txt
@@ -88,9 +95,24 @@ http:
 	curl -L -s $(hack domain)/robots.txt -o robots.txt
 	echo $(hack domain) | dnsx -asn  -a -recon -resp > dnsx.txt
 	echo "vhosts 60" | anew todo.txt
-	echo "fields	60" | anew todo.txt
+	echo "fields 60" | anew todo.txt
 	echo "param 60" | anew todo.txt
 	echo "paths 60" | anew todo.txt
+	echo "cookies 60" | anew todo.txt
+	echo "headers 60" | anew todo.txt
+	echo "methods 60" | anew todo.txt
+	echo "source 60" | anew todo.txt
+	echo "tech_stack 60" | anew todo.txt
+
+smtp:
+	echo "username_enum" | anew todo.txt
+
+lfi:
+	echo "passwd" | anew todo.txt
+	echo "config.php" | anew todo.txt
+
+mysql:
+	nmap -p 3306 --script="+*mysql* and not brute and not dos and not fuzzer" -vv -oN mysql  $(hack ip)
 
 wl:
 	@find . /usr/share/seclists/ -type f | fzf
@@ -113,8 +135,13 @@ hs port:
 	ip addr | grep inet | sort
 	python3 -m http.server {{port}}
 
-sqliraw:
-	sqlmap -r raw.http --risk 3 --level 5
+sqli:
+	echo "https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/SQL%20Injection"
+	echo "' %27 \" %22 # %23 ; %3B) *  %%2727  %25%27 "| tr ' ' '\n' | anew test.wl
+	echo "union all select 1,2,3,4,5,6,7,8"
+
+#sqliraw:
+#	sqlmap -r raw.http --risk 3 --level 5
 
 ldap:
 	nmap -sV --script "ldap* and not brute" -p 389 $(hack ip) -o nmap.ldap.txt
@@ -130,6 +157,7 @@ field:
 	echo "sleep		30" | anew todo.txt
 	echo "platform_specific	30" | anew todo.txt
 	echo "sqli	30" | anew todo.txt
+	echo "command_injection	30" | anew todo.txt
 
 #simple network management protocol check
 snmp-check:
@@ -147,6 +175,7 @@ smb:
 	enum4linux -u "guest" -p "" $(hack ip) | tee enum4linux.guest.txt
 	enum4linux -u "" -p "" $(hack ip) | tee enum4linux.empty.txt
 	echo "lookupsid" | anew todo.txt
+	echo "find_password_policy" | anew todo.txt
 	#lookupsid.py $(hack domain)@$(hack ip)
 	#cat sid.txt  | grep -i sidtypeuser | tr '\\' ' ' | choose 2 > users.txt
 

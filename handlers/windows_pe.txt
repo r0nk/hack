@@ -12,6 +12,27 @@
 #User information
 whoami
 whoami /groups # am I already an administrator?
+#If BUILTIN\Server Operators, you can start a service as system for a shell
+#DNSAdmins
+#    The DNSAdmins group can allow to its members to execute code in Domain Controllers as SYSTEM by using an arbitrary DLL.
+#Protected Users
+#    This can frustrate attempts to abuse of these account through NTLM relay or Kerberos Delegation attacks.
+#Schema Admins
+#    The Schema Admins can modify the Active Directory database schema.
+#Account Operators
+#    The Account Operators group can modify the members of many groups of the domain, excluding many of the administrators groups. However it can modify the Server Operators group.
+#Backup Operators
+#    The members of Backup Operators can back up and restore files in Domain Controllers (they also can log in to them). This could allow to modify files in Domain Controllers.
+#Print Operators
+#    The Print Operators can log into the Domain Controllers.
+#Server Operators
+#    The Server Operators can log on in Domain Controllers and manage its configuration.
+#Remote Desktop Users
+#    The members of Remote Desktop Users can log on in a Domain Controller through RDP.
+#Group Policy Creator Owners
+#    The members of Group Policy Creator Owners can edit GPOs in the domain.
+
+
 whoami /priv #if this one has SeImpersonatePrivilege, then we can use godpotato for pe
 get-localuser
 get-localgroup
@@ -22,6 +43,10 @@ systeminfo
 ipconfig /all
 netstat -ano #Opened ports?
 route print
+
+#check history
+Get-History
+(Get-PSReadlineOption).HistorySavePath #displays the path of consoleHost_history.txt
 
 
 # Installed applications
@@ -35,13 +60,23 @@ ps
 
 
 #do we have ssh? makes it easier to transfer files/remote port forward
-ssh
+ssh 2>&1
 
 
 #Be sure to check for databases/hashes
 
 #filesystem searches
 Get-ChildItem -Path C:\xampp -Include *.txt,*.ini -File -Recurse -ErrorAction SilentlyContinue
+Get-ChildItem -Path C:\ -Include *.kdbx -File -Recurse -ErrorAction SilentlyContinue
 ls -r c:\users
 
-#If we're on a domain controller, look for Vulnerable Certificate Authority Access Control - ESC7
+#check for unquoted service paths
+
+
+#winpeas
+
+#bloodhound
+
+#If we're on a domain controller, 
+Get-ADDomain
+#look for Vulnerable Certificate Authority Access Control - ESC7

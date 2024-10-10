@@ -19,9 +19,9 @@ find /home /opt /tmp
 /usr/sbin/getcap -r / 2>/dev/null
 find / -perm /u=s,g=s -type f 2>/dev/null
 #https://gtfobins.github.io/gtfobins/
-find / -writable -type d 2>/dev/nul
+find / -writable -type d 2>/dev/null
 #find and sort by date modified
-find . -printf "%T@ %Tc %p\n" | sort -n
+find . -printf "%T@ %Tc %p\n" 2>/dev/null | sort -n
 
 #find by user
 find / -type f -user root 2>/dev/null
@@ -42,9 +42,12 @@ ps aux
 #if its writable we can add our own password to it
 ls -al /etc/passwd
 
+#try to find if libraries are writable
+
 #also run linpeas
 
 cat /etc/fstab
 
 lsmod
+
 

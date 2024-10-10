@@ -13,3 +13,5 @@ net accounts # to display lockout information
 	#overpass the hash with mimikax
 
 #try to map things with bloodhound
+
+#https://zer1t0.gitlab.io/posts/attacking_ad/
