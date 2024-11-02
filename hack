@@ -345,4 +345,9 @@ api:
 
 #cat the code in, like ``` cat code.c | hack code_review ```
 code_review:
-	llm -m mistral-7b-instruct-v0 -s  'Is the following code vulnerable?'
+	cloc .
+	echo "enumerate_sources	60"
+	echo "creds_and_keys	60"
+	echo "fuzzing/harness	60"
+	echo "fuzzing	60"
+#	llm -m mistral-7b-instruct-v0 -s  'Is the following code vulnerable?'
